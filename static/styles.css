@@ -1,3 +1,7 @@
 .card {
     overflow-y: scroll;
 }
+
+.py-terminal {
+    margin-bottom: 50em !important
+}

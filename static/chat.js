@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.emit('page-loaded', 'test')
 
+    // This is the hardcoded bot message
+    function sendBotMessage(){
+        const time = new Date().toLocaleString();
+        socket.emit('message', {'user': 'HamML Bot', 'message': 'Sure, I can help you with that!  Here is some code:', 'time':time})
+    };
+
     // Construct the message to broadcast
     function sendMessage(){
         const message = document.querySelector('#msg').value
@@ -12,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = new Date().toLocaleString();
         socket.emit('message', {'user': name, 'message': message, 'time':time})
         document.getElementById("msg").value = "";
+        sendBotMessage();
     };
+
 
     document.getElementById("message-form")
     .addEventListener("submit", function(event) {
@@ -45,8 +53,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         <small class="card-subtitle text-muted"> at ${data.time}</small>
                         <p class="card-text">${data.message}</p>
                     </div>`;
-        // populate the card                    
+        
+        var code_block = `<div style="margin-right: 3rem;">
+                             <py-repl id="my-repl" output="replOutput">print('hello')</py-repl>
+                             <div class="card-body">
+                                <p class="card-text code-output" id="replOutput"></p>
+                             </div>
+                         </div>`;
+        
+        // inject the REPL if the user is HamML Bot
+        if (data.user == 'HamML Bot') {
+            card = card + code_block;
+        };                
+        // populate the card    
         new_row.innerHTML = card;
+
         // display the messages on the page!
         document.querySelector('#messages').append(new_row);
         window.scrollTo(0,document.body.scrollHeight);
